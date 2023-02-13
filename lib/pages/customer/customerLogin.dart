@@ -17,6 +17,7 @@ import '../../widgets/alertDialog.dart';
 import '../../widgets/loader.dart';
 import '../../widgets/validationErrorText.dart';
 import '../settings/pinScreenSettings.dart';
+import 'customerSignup.dart';
 
 class CutomerLogin extends StatefulWidget {
   const CutomerLogin({Key? key}) : super(key: key);
@@ -98,7 +99,7 @@ class _CutomerLoginState extends State<CutomerLogin>  with SingleTickerProviderS
                   children: [
                     Container(
                       padding:EdgeInsets.only(top:20 ) ,
-                      child: Image.asset('assets/images/loginpages/Homelogin.png', width:SizeConfig.screenWidth!*0.9,height: SizeConfig.screenHeight!*0.4,fit: BoxFit.cover,),
+                      child: Image.asset('assets/images/loginpages/Homelogin.png', width:SizeConfig.screenWidth!*0.9,height: SizeConfig.screenHeight!*0.4,fit: BoxFit.contain,),
                     ),
                     SizedBox(height: 20,),
                     Container(
@@ -252,10 +253,17 @@ class _CutomerLoginState extends State<CutomerLogin>  with SingleTickerProviderS
                                               children: [
                                                 GestureDetector(
                                                     onTap: (){
-                                                      //Navigator.push(context, MaterialPageRoute(builder: (context)=>OtpGenerat()),);
+                                                      Navigator.push(context, MaterialPageRoute(builder: (context)=>CustomerSignUp()),);
 
                                                     },
-                                                    child: Text('Login with OTP',style: TextStyle(fontSize: 18,fontFamily: 'RB',color: Color(0XFFFE316C)),)),
+                                                    child: RichText(
+                                                      text: TextSpan(text: 'Create an Account ? ',style: TextStyle(color:ColorUtil.text1,fontFamily: 'RR',fontSize: 14),
+                                                        children: <TextSpan>[
+                                                          TextSpan(text: 'Sign Up', style: TextStyle(color:ColorUtil.primaryColor,fontFamily: 'RB',fontSize: 15)),
+                                                        ],
+                                                      ),
+                                                    ),
+                                                ),
                                               ],
                                             )
                                         ),

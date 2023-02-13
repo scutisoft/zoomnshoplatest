@@ -10,6 +10,7 @@ import 'package:zoomnshoplatest/constants/sp.dart';
 import 'package:zoomnshoplatest/notifier/configuration.dart';
 import 'package:zoomnshoplatest/pages/loginpage/OtpGenerat.dart';
 import 'package:zoomnshoplatest/pages/settings/pinScreenSettings.dart';
+import 'package:zoomnshoplatest/utils/colorUtil.dart';
 import 'package:zoomnshoplatest/widgets/loader.dart';
 
 import '../../api/ApiManager.dart';
@@ -246,7 +247,8 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                                         Navigator.push(context, MaterialPageRoute(builder: (context)=>OtpGenerat()),);
 
                                                       },
-                                                      child: Text('Login with OTP',style: TextStyle(fontSize: 18,fontFamily: 'RB',color: Color(0XFFFE316C)),)),
+                                                      child: Text('Login with OTP',style: TextStyle(fontSize: 18,fontFamily: 'RB',color: Color(0XFFFE316C)),)
+                                                  ),
                                                 ],
                                               )
                                           ),
