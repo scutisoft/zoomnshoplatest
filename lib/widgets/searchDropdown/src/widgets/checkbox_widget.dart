@@ -8,7 +8,7 @@ class CheckBoxWidget extends StatefulWidget {
   final WidgetCheckBox? checkBox;
   final bool isChecked;
   final bool isDisabled;
-  final ValueChanged<bool?>? onChanged;
+  final ValueChanged<bool>? onChanged;
 
   CheckBoxWidget({
     Key? key,
@@ -16,7 +16,7 @@ class CheckBoxWidget extends StatefulWidget {
     this.isDisabled = false,
     this.layout,
     this.checkBox,
-    required this.onChanged,
+    this.onChanged,
   }) : super(key: key);
 
   @override

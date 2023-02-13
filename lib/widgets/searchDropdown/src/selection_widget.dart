@@ -49,7 +49,7 @@ class SelectionWidget<T> extends StatefulWidget {
   final FavoriteItemsBuilder<T>? favoriteItemBuilder;
 
   ///favorite items alignment
-  final MainAxisAlignment? favoriteItemsAlignment;
+  final MainAxisAlignment favoriteItemsAlignment;
 
   ///favorites item
   final FavoriteItems<T>? favoriteItems;
@@ -84,7 +84,7 @@ class SelectionWidget<T> extends StatefulWidget {
   final SelectionListViewProps selectionListViewProps;
 
   /// props for selection focus node
-  final FocusNode focusNode;
+  final FocusNode? focusNode;
 
   const SelectionWidget({
     Key? key,
@@ -122,7 +122,7 @@ class SelectionWidget<T> extends StatefulWidget {
     this.popupValidationMultiSelectionWidget,
     this.popupCustomMultiSelectionWidget,
     this.selectionListViewProps = const SelectionListViewProps(),
-    required this.focusNode,
+     this.focusNode,
   }) : super(key: key);
 
   @override
@@ -134,7 +134,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
   final ValueNotifier<bool> _loadingNotifier = ValueNotifier(false);
   final List<T> _cachedItems = [];
   final ValueNotifier<List<T>> _selectedItemsNotifier = ValueNotifier([]);
-  late Debouncer _debouncer;
+   late Debouncer _debouncer;
 
   List<T> get _selectedItems => _selectedItemsNotifier.value;
 
@@ -146,7 +146,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
 
     widget.searchFieldProps?.controller?.addListener(() {
       _debouncer(() {
-        _onTextChanged(widget.searchFieldProps!.controller!.text);
+        _onTextChanged(widget.searchFieldProps!.controller.text);
       });
     });
 
@@ -185,7 +185,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
       constraints: BoxConstraints(maxHeight: widget.maxHeight ?? maxHeight),
       child: ValueListenableBuilder(
           valueListenable: _selectedItemsNotifier,
-          builder: (ctx, value, wdgt) {
+          builder: (ctx, dynamic value, wdgt) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               mainAxisSize: MainAxisSize.min,
@@ -409,7 +409,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
   void _manageItemsByFilter(String filter, {bool isFistLoad = false}) async {
     _loadingNotifier.value = true;
 
-    List<T> applyFilter(String? filter) {
+    List<T> applyFilter(String filter) {
       return _cachedItems.where((i) {
         if (widget.filterFn != null)
           return (widget.filterFn!(i, filter));
@@ -643,7 +643,7 @@ class SelectionWidgetState<T> extends State<SelectionWidget<T>> {
           stream: _itemsStream.stream,
           builder: (context, snapshot) {
             if (snapshot.hasData) {
-              return _buildFavoriteItems(widget.favoriteItems!(snapshot.data!));
+              return _buildFavoriteItems(widget.favoriteItems!(snapshot.data));
             } else {
               return Container();
             }

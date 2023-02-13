@@ -8,7 +8,7 @@ class SelectionListViewProps {
   final bool? primary;
   final ScrollPhysics? physics;
   final bool shrinkWrap;
-  final EdgeInsetsGeometry? padding;
+  final EdgeInsetsGeometry padding;
   final bool addAutomaticKeepAlives;
   final bool addRepaintBoundaries;
   final bool addSemanticIndexes;

@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 class ColorUtil{
   static Color themeWhite=Color(0xffFFFFFF);
   static Color primaryColor=Color(0xffE7476E);
+  static Color primary=Color(0xffE7476E);
   static Color primaryColor2=Color(0xFFF5CAB6);
   static Color primaryTextColor1=Color(0xFF8C8C8C);
   static Color primaryTextColor2=Color(0xFF383838);
@@ -28,6 +29,14 @@ class ColorUtil{
   static Color chkBoxText=const Color(0xff452800);
   static Color disableColor=Color(0xFFe8e8e8);
   static Color avatarBorderColor=Color(0xFFC7D0D8);
+
+
+
+  static const TextStyle search2ActiveTS=TextStyle(fontFamily: 'RR',fontSize: 15,color: Color(0xffffffff));
+  static const TextStyle search2InActiveTS=TextStyle(fontFamily: 'RR',fontSize: 15,color: Color(0xff979797));
+
+  static Color search2ActBg= primaryColor;
+  static Color search2InActBg= Color(0xffffffff);
 
   //Animated Search Bar
   static Color asbColor=primaryColor;

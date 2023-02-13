@@ -67,7 +67,7 @@ Future<List<ParameterModel>> getFrmCollectionV2(List widgets) async{
   //List<ParameterModel> temp=await getParameterEssential();
   //parameterList.addAll(temp);
 
-  widgets.forEach((widget) {
+  for (var widget in widgets) {
       String elementType="";
       try{
         elementType=widget.getType();
@@ -102,8 +102,19 @@ Future<List<ParameterModel>> getFrmCollectionV2(List widgets) async{
           parameterList.add(ParameterModel(Key: widget.getDataName(), Type: 'string', Value: widget.getValue()));
         }
       }
-
-  });
+      if(elementType=='singleVideoPicker' || elementType=='singleImagePicker'){
+        if(widget.hasInput??false){
+          if(widget.required??false){
+            if(widget.validate()){
+              parameterList.add(ParameterModel(Key: widget.getDataName(), Type: 'string', Value: await widget.getValue(), orderBy: widget.getOrderBy()));
+            }
+          }
+          else{
+              parameterList.add(ParameterModel(Key: widget.getDataName(), Type: 'string', Value: await widget.getValue(), orderBy: widget.getOrderBy()));
+          }
+        }
+    }
+  }
   return parameterList;
 }
 

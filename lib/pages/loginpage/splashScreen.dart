@@ -42,7 +42,7 @@ class _SplashScreenState extends State<SplashScreen> implements MyNotificationCa
         Get.off(CutomerLogin());
       }
       else{
-        Get.off(LoginPage());
+        Get.off(CutomerLogin());
       }
     });
   }

@@ -1,5 +1,7 @@
  import 'package:flutter/material.dart';
 
+import '../HappyExtension/utilWidgets.dart';
+
 
 
  class MyConstants{
@@ -46,10 +48,10 @@ Color bgColor=Color(0xFF4267F6);
 Color gridBodyBgColor=Color(0xFFFFFFFF);
 Color grey=Color(0xFF787878);
 Color lightGrey=Color(0xffF8F8FA);
- Color addNewTextFieldBorder=Color(0xFFF7F8FA);
+/* Color addNewTextFieldBorder=Color(0xFFF7F8FA);
  Color addNewTextFieldText=Color(0XFF808080);
 const Color addNewTextFieldFocusBorder=Color(0xFF6B6B6B);
- Color disableColor=Color(0xFFe8e8e8);
+ Color disableColor=Color(0xFFe8e8e8);*/
  Color uploadColor=Color(0xFFC7D0D8);
  Color indicatorColor=Color(0xFF1C1C1C);
  Color text1=Color(0xFF464646);

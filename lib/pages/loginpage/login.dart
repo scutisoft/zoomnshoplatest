@@ -245,10 +245,10 @@ class _LoginPageState extends State<LoginPage> with SingleTickerProviderStateMix
                                                   GestureDetector(
                                                       onTap: (){
                                                         Navigator.push(context, MaterialPageRoute(builder: (context)=>OtpGenerat()),);
-
                                                       },
                                                       child: Text('Login with OTP',style: TextStyle(fontSize: 18,fontFamily: 'RB',color: Color(0XFFFE316C)),)
                                                   ),
+
                                                 ],
                                               )
                                           ),

@@ -43,9 +43,9 @@ class SkProductNotifier extends GetxController{
         else{
           setFrmValuesV2(addNewWidgets, parsed['Table']);
           logoFile=null;
-          customerLogoFileName= parsed['Table'][0]['ProductImage'];
+          customerLogoFileName= parsed['Table'][0]['ProductFile'];
           customerLogoUrl.value=GetImageBaseUrl()+customerLogoFileName;
-
+          skProductController.addNewWidgets[5].setValue(parsed['Table'][0]['ProductVideo']??"");
         }
       }
     });
@@ -68,17 +68,20 @@ class SkProductNotifier extends GetxController{
     params.add(ParameterModel(Key: "ClientId", Type: "String", Value: await getSharedPrefString(SP_COMPANYID)));
 
     params.addAll(await getFrmCollectionV2(addNewWidgets));
+
     //customerLogoFileName="";
     if(logoFile!=null){
       customerLogoFileName=await MyHelper.uploadFile(customerLogoFolderName,logoFile!);
     }
     params.add(ParameterModel(Key: "ProductFileName", Type: "String", Value: getImgFileName(customerLogoFileName)));
-    params.add(ParameterModel(Key: "ProductVideoFileName", Type: "String", Value: ""));
+    //params.add(ParameterModel(Key: "ProductVideoFileName", Type: "String", Value: ""));
     params.add(ParameterModel(Key: "ProductTypeId", Type: "String", Value: ""));
 
+    console("${jsonEncode(params)}");
     ApiManager().GetInvoke(params).then((value){
       if(value[0]){
         Get.back();
+
         CustomAlert().successAlert("Product ${isEdit?"Updated":"Added"}...", "");
         getProductDetail();
       }

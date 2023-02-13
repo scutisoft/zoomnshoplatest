@@ -9,8 +9,8 @@ const Duration _bottomSheetExitDuration = Duration(milliseconds: 200);
 const Curve _modalBottomSheetCurve = decelerateEasing;
 
 Future<T?> showModalBottomSheetCustom<T>({
-  required BuildContext context,
-  required WidgetBuilder builder,
+   required BuildContext context,
+   WidgetBuilder? builder,
   Color? backgroundColor,
   double? elevation,
   ShapeBorder? shape,
@@ -49,7 +49,7 @@ Future<T?> showModalBottomSheetCustom<T>({
 class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
   _ModalBottomSheetRoute({
     this.builder,
-    required this.capturedThemes,
+     this.capturedThemes,
     this.barrierLabel,
     this.backgroundColor,
     this.elevation,
@@ -58,14 +58,14 @@ class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
     this.modalBarrierColor,
     this.isDismissible = true,
     this.enableDrag = true,
-    required this.isScrollControlled,
+     this.isScrollControlled,
     RouteSettings? settings,
     this.transitionAnimationController,
   }) : super(settings: settings);
 
   final WidgetBuilder? builder;
-  final CapturedThemes capturedThemes;
-  final bool isScrollControlled;
+  final CapturedThemes? capturedThemes;
+  final bool? isScrollControlled;
   final Color? backgroundColor;
   final double? elevation;
   final ShapeBorder? shape;
@@ -124,15 +124,15 @@ class _ModalBottomSheetRoute<T> extends PopupRoute<T> {
       },
     );
 
-    return capturedThemes.wrap(bottomSheet);
+    return capturedThemes!.wrap(bottomSheet);
   }
 }
 
 class _ModalBottomSheetLayout extends SingleChildLayoutDelegate {
   _ModalBottomSheetLayout(this.progress, this.isScrollControlled);
 
-  final double progress;
-  final bool isScrollControlled;
+  final double? progress;
+  final bool? isScrollControlled;
 
   @override
   BoxConstraints getConstraintsForChild(BoxConstraints constraints) {
@@ -140,7 +140,7 @@ class _ModalBottomSheetLayout extends SingleChildLayoutDelegate {
       minWidth: constraints.maxWidth,
       maxWidth: constraints.maxWidth,
       minHeight: 0.0,
-      maxHeight: isScrollControlled
+      maxHeight: isScrollControlled!
           ? constraints.maxHeight
           : constraints.maxHeight * 9.0 / 16.0,
     );
@@ -148,7 +148,7 @@ class _ModalBottomSheetLayout extends SingleChildLayoutDelegate {
 
   @override
   Offset getPositionForChild(Size size, Size childSize) {
-    return Offset(0.0, size.height - childSize.height * progress);
+    return Offset(0.0, size.height - childSize.height * progress!);
   }
 
   @override
@@ -170,7 +170,7 @@ class _ModalBottomSheet<T> extends StatefulWidget {
   }) : super(key: key);
 
   final _ModalBottomSheetRoute<T>? route;
-  final bool isScrollControlled;
+  final bool? isScrollControlled;
   final Color? backgroundColor;
   final double? elevation;
   final ShapeBorder? shape;
@@ -182,7 +182,7 @@ class _ModalBottomSheet<T> extends StatefulWidget {
 }
 
 class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
-  ParametricCurve<double> animationCurve = _modalBottomSheetCurve;
+  ParametricCurve<double?> animationCurve = _modalBottomSheetCurve;
 
   String _getRouteLabel(MaterialLocalizations localizations) {
     switch (Theme.of(context).platform) {
@@ -240,7 +240,7 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
       builder: (BuildContext context, Widget? child) {
         // Disable the initial animation when accessible navigation is on so
         // that the semantics are added to the tree at the correct time.
-        final double animationValue = animationCurve.transform(
+        final double? animationValue = animationCurve.transform(
           mediaQuery.accessibleNavigation
               ? 1.0
               : widget.route!.animation!.value,
@@ -263,7 +263,7 @@ class _ModalBottomSheetState<T> extends State<_ModalBottomSheet<T>> {
   }
 }
 
-class _BottomSheetSuspendedCurve extends ParametricCurve<double> {
+class _BottomSheetSuspendedCurve extends ParametricCurve<double?> {
   /// Creates a suspended curve.
   const _BottomSheetSuspendedCurve(
     this.startingPoint, {
@@ -279,7 +279,7 @@ class _BottomSheetSuspendedCurve extends ParametricCurve<double> {
   final Curve curve;
 
   @override
-  double transform(double t) {
+  double? transform(double t) {
     assert(t >= 0.0 && t <= 1.0);
     assert(startingPoint >= 0.0 && startingPoint <= 1.0);
 
@@ -293,7 +293,7 @@ class _BottomSheetSuspendedCurve extends ParametricCurve<double> {
 
     final double curveProgress = (t - startingPoint) / (1 - startingPoint);
     final double transformed = curve.transform(curveProgress);
-    return lerpDouble(startingPoint, 1, transformed)!;
+    return lerpDouble(startingPoint, 1, transformed);
   }
 
   @override

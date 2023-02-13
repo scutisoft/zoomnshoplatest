@@ -56,7 +56,7 @@ class TextFieldProps {
     this.restorationId,
   }) : this.controller = controller ?? TextEditingController();
 
-  final TextEditingController? controller;
+  final TextEditingController controller;
 
   final SmartDashesType? smartDashesType;
 
@@ -92,7 +92,7 @@ class TextFieldProps {
 
   final bool enableSuggestions;
 
-  final int? maxLines;
+  final int maxLines;
 
   final int? minLines;
 

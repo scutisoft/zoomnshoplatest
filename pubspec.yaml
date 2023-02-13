@@ -86,7 +86,7 @@ dependencies:
   zego_uikit_prebuilt_call: ^2.0.0
   image_picker:
   image_cropper:
-
+  universal_html:
 
 dev_dependencies:
   flutter_test:

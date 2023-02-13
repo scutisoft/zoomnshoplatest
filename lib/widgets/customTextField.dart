@@ -2,12 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 
+import '../HappyExtension/utilWidgets.dart';
 import '../styles/constants.dart';
 import '../utils/sizeLocal.dart';
 
 
 //Color addNewTextFieldText=Color(0xFF787878);
-Color disableColor=Color(0xFFe8e8e8);
+//Color disableColor=Color(0xFFe8e8e8);
 // Color addNewTextFieldBorder=Color(0xFFCDCDCD);
 // Color addNewTextFieldFocusBorder=Color(0xFF6B6B6B);
 

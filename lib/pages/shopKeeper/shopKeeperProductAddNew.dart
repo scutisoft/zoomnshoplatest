@@ -1,8 +1,12 @@
+import 'dart:io';
+
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:video_player/video_player.dart';
 import 'package:zoomnshoplatest/app_theme.dart';
 import 'package:zoomnshoplatest/notifier/shopKeeper/skProductNotifier.dart';
+import 'package:zoomnshoplatest/notifier/utils.dart';
 import 'package:zoomnshoplatest/styles/style.dart';
 import 'package:zoomnshoplatest/widgets/loader.dart';
 
@@ -11,8 +15,11 @@ import '../../api/ApiManager.dart';
 import '../../styles/constants.dart';
 import '../../utils/colorUtil.dart';
 import '../../utils/sizeLocal.dart';
+import '../../widgets/customWidgetsForDynamicParser/searchDrp2.dart';
 import '../../widgets/logoPicker.dart';
 import '../../widgets/searchDropdown/search2.dart';
+import '../../widgets/videoPlayer/src/flick_video_player.dart';
+import '../../widgets/videoPlayer/src/manager/flick_manager.dart';
 
 class ProductAddNew extends StatefulWidget {
   bool isEdit;
@@ -51,8 +58,8 @@ class _ProductAddNewState extends State<ProductAddNew> {
   );
   Search2 categoryDrp=Search2(
     dataName: "ProductCategoryId",
-    width: 400,
-    dialogWidth: 360,
+    width: SizeConfig.screenWidth,
+    dialogWidth: SizeConfig.screenWidth!,
     selectWidgetHeight: 50,
     hinttext: "Select Category",
     data: [],
@@ -63,11 +70,19 @@ class _ProductAddNewState extends State<ProductAddNew> {
     selectedValueFunc: (e){},
     scrollTap: (){},
     isToJson: true,
-    margin: EdgeInsets.only(left: 20,right: 20,top: 15),
-    dialogMargin: EdgeInsets.only(left: 20,right: 20,top: 5),
+    margin: const EdgeInsets.only(left: 20,right: 20,top: 15,bottom: 0),
+    dialogMargin:  const EdgeInsets.only(left: 20,right: 20,top: 0),
     required: true,
+    labelTopPosition: 8,
+    labelText: "Category",
+    selectWidgetBoxDecoration: BoxDecoration(
+        border: Border.all(color: addNewTextFieldBorder),
+        color: Colors.white
+    ),
   );
   HiddenController productId=HiddenController(hasInput: true,dataname: "ProductId",);
+
+
   @override
   void initState(){
     addNewLabelTextField.onEditComplete=(){node.unfocus();};
@@ -84,6 +99,8 @@ class _ProductAddNewState extends State<ProductAddNew> {
     skProductController.addNewWidgets.add(addNewLabelTextField2);
     skProductController.addNewWidgets.add(addNewLabelTextField3);
     skProductController.addNewWidgets.add(productId);
+    skProductController.addNewWidgets.add(SingleVideoPicker(dataname: "ProductVideoFileName", folder: "ProductVideo",hasInput: true,btnTitle: "Choose Video",));
+
 
     setState((){ });
     await skProductController.fillOI_Drp();
@@ -94,13 +111,16 @@ class _ProductAddNewState extends State<ProductAddNew> {
 
   @override
   void dispose(){
+    skProductController.addNewWidgets[5].clearValues();
     super.dispose();
   }
+
 
   @override
   Widget build(BuildContext context) {
     node=FocusScope.of(context);
     return Scaffold(
+        backgroundColor: Color(0XFFffffff),
       body: Stack(
         children: [
           SingleChildScrollView(
@@ -146,7 +166,7 @@ class _ProductAddNewState extends State<ProductAddNew> {
 
                 for(int i=0;i<skProductController.addNewWidgets.length;i++)
                   skProductController.addNewWidgets[i],
-                SizedBox(height: 20,),
+                const SizedBox(height: 20,),
                 Obx(() => LogoPicker(
                     imageUrl: skProductController.customerLogoUrl.value,
                     imageFile: skProductController.logoFile,
@@ -159,6 +179,8 @@ class _ProductAddNewState extends State<ProductAddNew> {
                       });
                     }
                 )),
+
+
                 GestureDetector(
                   onTap: (){
                     skProductController.onOpenItemSave(widget.isEdit);

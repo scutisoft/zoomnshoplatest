@@ -14,14 +14,16 @@ const double _kMenuMinWidth = 2.0 * _kMenuWidthStep;
 const double _kMenuVerticalPadding = 0.0;
 const double _kMenuWidthStep = 1.0;
 const double _kMenuScreenPadding = 0.0;
+
+
 class _MenuItem extends SingleChildRenderObjectWidget {
   const _MenuItem({
     Key? key,
-    required this.onLayout,
+     this.onLayout,
     Widget? child,
   }) : super(key: key, child: child);
 
-  final ValueChanged<Size> onLayout;
+  final ValueChanged<Size>? onLayout;
 
   @override
   RenderObject createRenderObject(BuildContext context) {
@@ -38,7 +40,7 @@ class _MenuItem extends SingleChildRenderObjectWidget {
 class _RenderMenuItem extends RenderShiftedBox {
   _RenderMenuItem(this.onLayout, [RenderBox? child]) : super(child);
 
-  ValueChanged<Size> onLayout;
+  ValueChanged<Size>? onLayout;
 
   @override
   void performLayout() {
@@ -50,9 +52,10 @@ class _RenderMenuItem extends RenderShiftedBox {
     }
     final BoxParentData childParentData = child!.parentData as BoxParentData;
     childParentData.offset = Offset.zero;
-    onLayout(size);
+    onLayout!(size);
   }
 }
+
 
 class CustomPopupMenuItem<T> extends PopupMenuEntry<T> {
 
@@ -61,18 +64,21 @@ class CustomPopupMenuItem<T> extends PopupMenuEntry<T> {
     this.value,
     this.height = kMinInteractiveDimension,
     this.textStyle,
-    required this.child,
+     this.child,
   }) : super(key: key);
 
-  /// The value that will be returned by [customShowMenu] if this entry is selected.
+
   final T? value;
+
 
   @override
   final double height;
 
+
   final TextStyle? textStyle;
 
-  final Widget child;
+
+  final Widget? child;
 
   @override
   bool represents(T? value) => value == this.value;
@@ -82,9 +88,12 @@ class CustomPopupMenuItem<T> extends PopupMenuEntry<T> {
       PopupMenuItemState<T, CustomPopupMenuItem<T>>();
 }
 
+
 class PopupMenuItemState<T, W extends CustomPopupMenuItem<T>> extends State<W> {
+
   @protected
-  Widget buildChild() => widget.child;
+  Widget? buildChild() => widget.child;
+
 
   @protected
   void handleTap() {
@@ -95,25 +104,30 @@ class PopupMenuItemState<T, W extends CustomPopupMenuItem<T>> extends State<W> {
   Widget build(BuildContext context) {
     final ThemeData theme = Theme.of(context);
     final PopupMenuThemeData popupMenuTheme = PopupMenuTheme.of(context);
-    TextStyle? style = widget.textStyle ??
+    TextStyle style = widget.textStyle ??
         popupMenuTheme.textStyle ??
-        theme.textTheme.subtitle1;
+        theme.textTheme.subtitle1!;
 
     Widget item = AnimatedDefaultTextStyle(
-      style: style!,
+      style: style,
       duration: kThemeChangeDuration,
       child: Container(
         alignment: AlignmentDirectional.centerStart,
         constraints: BoxConstraints(minHeight: widget.height),
-        padding:
-            const EdgeInsets.symmetric(horizontal: _kMenuHorizontalPadding),
+        padding: const EdgeInsets.symmetric(horizontal: _kMenuHorizontalPadding),
+
+        decoration: BoxDecoration(
+          color: Colors.transparent,
+
+        ),
         child: buildChild(),
       ),
     );
-
+    return item;
     return InkWell(
       onTap: null,
       canRequestFocus: false,
+
       child: item,
     );
   }
@@ -131,9 +145,7 @@ class _PopupMenu<T> extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final double unit = 1.0 /
-        (route!.items.length +
-            1.5); // 1.0 for the width and 0.5 for the last item's fade.
+    final double unit = 1.0 / (route!.items.length + 1.5); // 1.0 for the width and 0.5 for the last item's fade.
     final List<Widget> children = <Widget>[];
     final PopupMenuThemeData popupMenuTheme = PopupMenuTheme.of(context);
 
@@ -150,6 +162,7 @@ class _PopupMenu<T> extends StatelessWidget {
         item = Container(
           color: Theme.of(context).highlightColor,
           child: item,
+
         );
       }
       children.add(
@@ -179,8 +192,7 @@ class _PopupMenu<T> extends StatelessWidget {
           explicitChildNodes: true,
           label: semanticLabel,
           child: SingleChildScrollView(
-            padding:
-                const EdgeInsets.symmetric(vertical: _kMenuVerticalPadding),
+            padding: const EdgeInsets.symmetric(vertical: _kMenuVerticalPadding),
             child: ListBody(children: children),
           ),
         ),
@@ -196,7 +208,8 @@ class _PopupMenu<T> extends StatelessWidget {
             shape: route!.shape ?? popupMenuTheme.shape,
             color: route!.color ?? popupMenuTheme.color,
            // color: Colors.red,
-            type: MaterialType.card,
+            borderOnForeground: false,
+            type: MaterialType.transparency,
             elevation: route!.elevation ?? popupMenuTheme.elevation ?? 8.0,
             child: Align(
               alignment: AlignmentDirectional.topStart,
@@ -263,7 +276,7 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
     }
 
     // Find the ideal horizontal position.
-    late double x;
+     late double x;
     if (position!.left > position!.right) {
       // Menu button is closer to the right edge, so grow to the left, aligned to the right edge.
       x = size.width - position!.right - childSize.width;
@@ -292,7 +305,7 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
       y = _kMenuScreenPadding;
     else if (y + childSize.height > size.height - _kMenuScreenPadding)
       y = size.height - childSize.height - _kMenuScreenPadding;
-    return Offset(x, y-20);
+    return Offset(x, y);
   }
 
   @override
@@ -312,7 +325,7 @@ class _PopupMenuRouteLayout extends SingleChildLayoutDelegate {
 class _PopupMenuRoute<T> extends PopupRoute<T> {
   _PopupMenuRoute({
     this.position,
-    required this.items,
+     required this.items,
     this.initialValue,
     this.elevation,
     this.theme,
@@ -384,30 +397,86 @@ class _PopupMenuRoute<T> extends PopupRoute<T> {
     }
 
     return SafeArea(
-      top: true,
+      top: popupSafeArea.top,
       bottom: popupSafeArea.bottom,
       left: popupSafeArea.left,
       right: popupSafeArea.right,
       child: Builder(
-          builder: (BuildContext context) {
-            return CustomSingleChildLayout(
-              delegate: _PopupMenuRouteLayout(
-                position,
-                itemSizes,
-                selectedItemIndex,
-                Directionality.of(context),
-              ),
-              child: menu,
-            );
-          },
+        builder: (BuildContext context) {
+          return CustomSingleChildLayout(
+            delegate: _PopupMenuRouteLayout(
+              position,
+              itemSizes,
+              selectedItemIndex,
+              Directionality.of(context),
+            ),
+            child: menu,
+          );
+        },
       ),
     );
   }
 }
+
+/// Show a popup menu that contains the `items` at `position`.
+///
+/// `items` should be non-null and not empty.
+///
+/// If `initialValue` is specified then the first item with a matching value
+/// will be highlighted and the value of `position` gives the rectangle whose
+/// vertical center will be aligned with the vertical center of the highlighted
+/// item (when possible).
+///
+/// If `initialValue` is not specified then the top of the menu will be aligned
+/// with the top of the `position` rectangle.
+///
+/// In both cases, the menu position will be adjusted if necessary to fit on the
+/// screen.
+///
+/// Horizontally, the menu is positioned so that it grows in the direction that
+/// has the most room. For example, if the `position` describes a rectangle on
+/// the left edge of the screen, then the left edge of the menu is aligned with
+/// the left edge of the `position`, and the menu grows to the right. If both
+/// edges of the `position` are equidistant from the opposite edge of the
+/// screen, then the ambient [Directionality] is used as a tie-breaker,
+/// preferring to grow in the reading direction.
+///
+/// The positioning of the `initialValue` at the `position` is implemented by
+/// iterating over the `items` to find the first whose
+/// [CustomPopupMenuEntry.represents] method returns true for `initialValue`, and then
+/// summing the values of [CustomPopupMenuEntry.height] for all the preceding widgets
+/// in the list.
+///
+/// The `elevation` argument specifies the z-coordinate at which to place the
+/// menu. The elevation defaults to 8, the appropriate elevation for popup
+/// menus.
+///
+/// The `context` argument is used to look up the [Navigator] and [Theme] for
+/// the menu. It is only used when the method is called. Its corresponding
+/// widget can be safely removed from the tree before the popup menu is closed.
+///
+/// The `useRootNavigator` argument is used to determine whether to push the
+/// menu to the [Navigator] furthest from or nearest to the given `context`. It
+/// is `false` by default.
+///
+/// The `semanticLabel` argument is used by accessibility frameworks to
+/// announce screen transitions when the menu is opened and closed. If this
+/// label is not provided, it will default to
+/// [MaterialLocalizations.popupMenuLabel].
+///
+/// See also:
+///
+///  * [CustomPopupMenuItem], a popup menu entry for a single value.
+///  * [PopupMenuDivider], a popup menu entry that is just a horizontal line.
+///  * [CheckedPopupMenuItem], a popup menu item with a checkmark.
+///  * [PopupMenuButton], which provides an [IconButton] that shows a menu by
+///    calling this method automatically.
+///  * [SemanticsConfiguration.namesRoute], for a description of edge triggered
+///    semantics.
 Future<T?> customShowMenu<T>({
-  required BuildContext context,
-  required RelativeRect position,
-  required List<PopupMenuEntry<T>> items,
+   required BuildContext context,
+   RelativeRect? position,
+   required List<PopupMenuEntry<T>> items,
   T? initialValue,
   double? elevation,
   String? semanticLabel,

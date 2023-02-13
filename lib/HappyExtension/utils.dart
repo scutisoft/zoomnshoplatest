@@ -7,6 +7,7 @@ import '../api/ApiManager.dart';
 import '../api/apiUtils.dart';
 import '../constants/sp.dart';
 import '../model/parameterMode.dart';
+import '../widgets/alertDialog.dart';
 
 
 
@@ -156,4 +157,8 @@ String getDataJsonForGrid(x){
     return x;
   }
   return "[]";
+}
+
+void assignWidgetErrorToast(e,t){
+  CustomAlert().cupertinoAlert("$e\n\n\n$t");
 }
