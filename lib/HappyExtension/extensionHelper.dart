@@ -1,4 +1,6 @@
 
+import 'package:zoomnshoplatest/api/ApiManager.dart';
+
 import '../notifier/utils.dart';
 import '../styles/constants.dart';
 import '../widgets/alertDialog.dart';
@@ -8,6 +10,25 @@ import 'dart:convert';
 import '../model/parameterMode.dart';
 import '../widgets/listView/HE_ListView.dart';
 import 'utils.dart';
+
+enum WidgetType{
+  list,
+  map
+}
+
+enum DevelopmentMode{
+  json,
+  traditional
+}
+
+class TraditionalParam{
+  List<ParameterModel> paramList;
+  String insertSp;
+  String updateSp;
+  String getByIdSp;
+  String? executableSp;
+  TraditionalParam({this.paramList=const [],required this.getByIdSp,required this.insertSp,required this.updateSp,this.executableSp});
+}
 
 abstract class ExtensionCallback {
   String getType();
@@ -21,12 +42,13 @@ abstract class ExtensionCallback {
 }
 
 mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
-  Future<List<ParameterModel>> getFrmCollection(List widgets) async{
+  Future<List<ParameterModel>> getFrmCollection(var widgets) async{
 
     List<bool> validateList=[];
     List<ParameterModel> parameterList=[];
     bool validate=false;
-    for (var widget in widgets) {
+
+    void widgetValidation(var widget) async{
       String elementType="";
       try{
         elementType=widget.getType();
@@ -87,18 +109,33 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
             if(validate){
               parameterList.add(ParameterModel(Key: widget.getDataName(), Type: 'string', Value: await widget.getValue(), orderBy: widget.getOrderBy()));
             }
-          }
+           }
           else{
-            parameterList.add(ParameterModel(Key: widget.getDataName(), Type: 'string', Value: await widget.getValue(), orderBy: widget.getOrderBy()));
+          parameterList.add(ParameterModel(Key: widget.getDataName(), Type: 'string', Value: await widget.getValue(), orderBy: widget.getOrderBy()));
           }
         }
       }
     }
+
+    WidgetType widgetType=getWidgetType(widgets);
+    if(widgetType==WidgetType.list){
+      for (var widget in widgets) {
+        widgetValidation(widget);
+      }
+    }
+    else if(widgetType==WidgetType.map){
+      widgets.forEach((key, widget) {
+        widgetValidation(widget);
+      });
+    }
+
+
     bool isValid=!validateList.any((element) => element==false);
     console("valid ${isValid}");
     return isValid?parameterList:[];
   }
 
+  //Not in use ,WidgetType widgetType=WidgetType.list,Map<String,dynamic> widgetMap=const {}
   setFrmValuesV2(List widgets,List response){
     if (response!=null && response.isNotEmpty) {
       for(int i=0;i<response.length;i++){
@@ -130,34 +167,44 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
     }
   }
 
-  setFrmValues(List widgets,List valueArray,{bool fromClearAll=false}){
+  setFrmValues(var widgets,List valueArray,{bool fromClearAll=false}){
+    void widgetValueUpdate(value,widget){
+      String widgetType="";
+      try{
+        widgetType=widget.getType();
+        if(widgetType.isNotEmpty){
+          if(fromClearAll){
+            widget.clearValues();
+          }
+          widget.setValue(value['value']);
+          widget.setOrderBy(value['orderBy']??1);
+        }
+      }catch(e){
+        // CustomAlert().cupertinoAlert("${widget.getDataName()} Error HE001 \n $e");
+      }
+    }
+
     if (valueArray!=null && valueArray.isNotEmpty) {
       for (var value in valueArray) {
         var widget=null;
-        var foundWid=widgets.where((x) => x.getDataName()==value['key']).toList();
-        if(foundWid.length==1){
-          widget=foundWid[0];
+        WidgetType widgetType=getWidgetType(widgets);
+        if(widgetType==WidgetType.list){
+          var foundWid=widgets.where((x) => x.getDataName()==value['key']).toList();
+          if(foundWid.length==1){
+            widget=foundWid[0];
+          }
+        }
+        else if(widgetType==WidgetType.map){
+          widget=widgets[value['key'].toString()];
         }
         if(widget!=null){
-          String widgetType="";
-          try{
-            widgetType=widget.getType();
-            if(widgetType.isNotEmpty){
-              if(fromClearAll){
-                widget.clearValues();
-              }
-              widget.setValue(value['value']);
-              widget.setOrderBy(value['orderBy']??1);
-            }
-          }catch(e){
-           // CustomAlert().cupertinoAlert("${widget.getDataName()} Error HE001 \n $e");
-          }
-          //print("widgetType $widgetType $value");
+          widgetValueUpdate(value, widget);
         }
       }
     }
-  }
 
+
+  }
 
   var parsedJson;
   List<dynamic> valueArray=[];
@@ -196,9 +243,11 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
     });*/
   }
 
-  Future<void> postUIJson(String pageIdentifier,String dataJson,String action,{Function? successCallback}) async{
+  Future<void> postUIJson(String pageIdentifier,String dataJson,String action,{Function? successCallback,
+    DevelopmentMode developmentMode= MyConstants.developmentMode,TraditionalParam? traditionalParam}) async{
     //"N'$dataJson'"
-    /*await GetUiNotifier().postUiJson(await getLoginId(), pageIdentifier, dataJson, {"actionType":action}).then((value){
+    if(developmentMode==DevelopmentMode.json){
+      /*await GetUiNotifier().postUiJson(await getLoginId(), pageIdentifier, dataJson, {"actionType":action}).then((value){
       //print("----- post    $value");
       if(value[0]){
        // console(value);
@@ -216,6 +265,33 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
         CustomAlert().cupertinoAlert(value[1]);
       }
     });*/
+    }
+    else if(developmentMode==DevelopmentMode.traditional){
+      if(traditionalParam != null && traditionalParam.executableSp!=null){
+        List<ParameterModel> finalParams=traditionalParam.paramList;
+        finalParams.add(ParameterModel(Key: "SpName", Type: "String", Value: traditionalParam.executableSp));
+        await ApiManager().GetInvoke(finalParams).then((value){
+          if(value[0]){
+            // console(value);
+            var parsed=jsonDecode(value[1]);
+            String errorMsg=parsed["TblOutPut"][0]["@Message"]??"";
+            if(successCallback!=null){
+              successCallback(parsed);
+            }
+            else{
+              addNotifications(NotificationType.success,msg: errorMsg);
+              //CustomAlert().successAlert(errorMsg, "");
+            }
+          }
+          else{
+            CustomAlert().cupertinoAlert(value[1]);
+          }
+        });
+      }
+      else{
+        assignWidgetErrorToast("Params Not Found...", "");
+      }
+    }
   }
 
   void sysSubmit(List<dynamic> widgets,{
@@ -225,8 +301,25 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
     bool needCustomValidation=false,
     Function? onCustomValidation,
     bool clearFrm=true,
-    bool closeFrmOnSubmit=true
+    bool closeFrmOnSubmit=true,
+    DevelopmentMode developmentMode= MyConstants.developmentMode,
+    TraditionalParam? traditionalParam
   }) async{
+
+    void successCbHandler(e){
+      String errorMsg=e["TblOutPut"][0]["@Message"]??"";
+      if(closeFrmOnSubmit){
+        Get.back();
+      }
+      addNotifications(NotificationType.success,msg: errorMsg);
+      //CustomAlert().successAlert(errorMsg, "");
+      if(clearFrm){
+        clearAll(widgets);
+      }
+      if(successCallback!=null && e['Table']!=null && e['Table'].length>0){
+        successCallback(e);
+      }
+    }
 
     bool isValid=true;
     if(needCustomValidation){
@@ -240,24 +333,25 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
         }catch(e){
           CustomAlert().cupertinoAlert("Error HE002 $e");
         }
-        postUIJson(getPageIdentifier(),
-            jsonEncode(params.map((e) => e.toJsonHE()).toList()),
-            action.isNotEmpty?action: isEdit?"Update":"Insert",
-            successCallback: (e){
-              String errorMsg=e["TblOutPut"][0]["@Message"]??"";
-              if(closeFrmOnSubmit){
-                Get.back();
-              }
-              addNotifications(NotificationType.success,msg: errorMsg);
-              //CustomAlert().successAlert(errorMsg, "");
-              if(clearFrm){
-                clearAll(widgets);
-              }
-              if(successCallback!=null && e['Table']!=null && e['Table'].length>0){
-                successCallback(e);
-              }
-            }
-        );
+        if(developmentMode==DevelopmentMode.json){
+          postUIJson(getPageIdentifier(),
+              jsonEncode(params.map((e) => e.toJsonHE()).toList()),
+              action.isNotEmpty?action: isEdit?"Update":"Insert",
+              successCallback: successCbHandler,
+              developmentMode: developmentMode
+          );
+        }
+        else if(developmentMode==DevelopmentMode.traditional){
+          if(traditionalParam==null){
+            assignWidgetErrorToast("Traditional Params not found...", "");
+            return;
+          }
+          traditionalParam.executableSp=isEdit?traditionalParam.updateSp:traditionalParam.insertSp;
+          traditionalParam.paramList=params;
+          postUIJson(getPageIdentifier(), "", "", successCallback: successCbHandler,
+            developmentMode: developmentMode, traditionalParam: traditionalParam
+          );
+        }
       }
     }
 
@@ -310,7 +404,7 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
     ).yesOrNoDialog2('assets/Slice/like.png', content, false);
   }
 
-  fillTreeDrp(List<dynamic> widgets,String key,{var refId,var page,bool clearValues=true,var refType,bool toggleRequired=false}) async{
+  fillTreeDrp(var widgets,String key,{var refId,var page,bool clearValues=true,var refType,bool toggleRequired=false}) async{
     var fWid=foundWidgetByKey(widgets, key);
     if(fWid!=null){
       if(clearValues){
@@ -329,23 +423,33 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
     }
   }
 
-  foundWidgetByKey(List<dynamic> widgets,String key,{bool needSetValue=false,dynamic value}){
-    for (var widget in widgets) {
-      if(widget.getDataName()==key){
-        if(needSetValue){
-          widget.setValue(value);
+  foundWidgetByKey(var widgets,String key,{bool needSetValue=false,dynamic value}){
+    WidgetType widgetType=getWidgetType(widgets);
+    if(widgetType==WidgetType.list){
+      for (var widget in widgets) {
+        if(widget.getDataName()==key){
+          if(needSetValue){
+            widget.setValue(value);
+          }
+          return widget;
         }
-        return widget;
       }
+    }
+    else if(widgetType==WidgetType.map){
+      var foundWidg=widgets[key];
+      if(needSetValue && foundWidg!=null){
+        foundWidg.setValue(value);
+      }
+      return foundWidg;
     }
     return null;
   }
 
-  void clearAll(List<dynamic> widgets){
+  void clearAll(var widgets){
     setFrmValues(widgets, valueArray,fromClearAll: true);
   }
 
-  void updateEnable(List<dynamic> widgets,key,{bool isEnabled=false}){
+  void updateEnable(var widgets,key,{bool isEnabled=false}){
     var fWid=foundWidgetByKey(widgets, key);
     if(fWid!=null){
       fWid.isEnabled=isEnabled;

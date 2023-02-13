@@ -1,5 +1,6 @@
  import 'package:flutter/material.dart';
 
+import '../HappyExtension/extensionHelper.dart';
 import '../HappyExtension/utilWidgets.dart';
 
 
@@ -15,6 +16,7 @@ import '../HappyExtension/utilWidgets.dart';
   static bool fromUrl=false;
   static bool hasAppVersionController=false;
   static bool bottomSafeArea=true;
+  static const DevelopmentMode developmentMode=DevelopmentMode.traditional;
 
   static Duration animeDuration = const Duration(milliseconds: 300);
   static Cubic animeCurve=Curves.easeIn;

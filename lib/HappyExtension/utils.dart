@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:get/get.dart';
+import 'package:zoomnshoplatest/HappyExtension/extensionHelper.dart';
 
 import '../api/ApiManager.dart';
 import '../api/apiUtils.dart';
@@ -120,6 +121,12 @@ bool HE_IsList(value){
   return value.runtimeType.toString()=="List<dynamic>";
 }
 
+WidgetType getWidgetType(var widgets){
+  if(HE_IsList(widgets)){
+    return WidgetType.list;
+  }
+  return WidgetType.map;
+}
 
 void updateArrById(primaryKey,updatedValueMap,arr,{ActionType action=ActionType.update,List<dynamic> primaryArr=const []}){
   if(action==ActionType.update){
