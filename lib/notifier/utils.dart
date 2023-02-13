@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:get/get.dart';
 import 'package:zoomnshoplatest/pages/shopKeeper/shopKeeperHomeScreen.dart';
 
@@ -9,6 +11,11 @@ import '../pages/customer/navHomeScreen.dart';
 import '../widgets/alertDialog.dart';
 import 'callNotifier.dart';
 import 'configuration.dart';
+
+void console(var content){
+  log(content.toString());
+}
+
 
 //1 shop keeper
 //2 customer
