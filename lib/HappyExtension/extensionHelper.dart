@@ -270,7 +270,8 @@ mixin HappyExtensionHelper implements HappyExtensionHelperCallback2{
       if(traditionalParam != null && traditionalParam.executableSp!=null){
         List<ParameterModel> finalParams=traditionalParam.paramList;
         finalParams.add(ParameterModel(Key: "SpName", Type: "String", Value: traditionalParam.executableSp));
-        await ApiManager().GetInvoke(finalParams).then((value){
+        //console("finalParams ${jsonEncode(finalParams)}");
+        await ApiManager().GetInvoke(finalParams,isNeedErrorAlert: false).then((value){
           if(value[0]){
             // console(value);
             var parsed=jsonDecode(value[1]);

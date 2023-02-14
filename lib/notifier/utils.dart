@@ -28,7 +28,7 @@ void navigateByUserType() async{
     Get.off(const CustomerHomeScreen());
   }
   else if(usertype==UserType.shopKeeper.index.toString()){
-    Get.off(ShopKeeperHomeScreen());
+    Get.off(const ShopKeeperHomeScreen());
   }
   else{
     CustomAlert().commonErrorAlert("Invalid User", "");

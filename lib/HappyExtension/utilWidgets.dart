@@ -12,14 +12,15 @@ import 'utils.dart';
 TextStyle errorTS=TextStyle(fontFamily: 'RR',fontSize: 14,color: Color(0xFFE34343));
 
 
-class HiddenController extends StatelessWidget {
+class HiddenController extends StatelessWidget implements ExtensionCallback{
   bool hasInput;
   String dataname;
- // var value="".obs;
+  // var value="".obs;
 
   HiddenController({this.hasInput=true,required this.dataname});
 
   Rxn value=Rxn();
+  var orderBy=1.obs;
 
   @override
   Widget build(BuildContext context) {
@@ -28,18 +29,41 @@ class HiddenController extends StatelessWidget {
       child: Obx(() => Text("${value.value}")),
     );
   }
-
+  @override
   getType(){
     return 'hidden';
   }
+  @override
   getValue(){
     return value.value;
   }
+  @override
   setValue(var val){
     value.value=val;
   }
+  @override
   String getDataName(){
     return dataname;
+  }
+
+  @override
+  void clearValues() {
+    value.value="";
+  }
+
+  @override
+  int getOrderBy() {
+    return orderBy.value;
+  }
+
+  @override
+  setOrderBy(int oBy) {
+    orderBy.value=oBy;
+  }
+
+  @override
+  bool validate() {
+    return true;
   }
 }
 Color addNewTextFieldText=Color(0xFF787878);

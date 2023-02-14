@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
+import 'package:video_player/video_player.dart';
+import 'package:zoomnshoplatest/notifier/utils.dart';
 import '../../api/ApiManager.dart';
 import '../../api/apiUtils.dart';
 import '../../notifier/customer/appointmentNotifier.dart';
@@ -19,6 +21,8 @@ import '../../widgets/fittedText.dart';
 import '../../widgets/innerShadowTBContainer.dart';
 import '../../widgets/loader.dart';
 import '../../widgets/validationErrorText.dart';
+import '../../widgets/videoPlayer/src/flick_video_player.dart';
+import '../../widgets/videoPlayer/src/manager/flick_manager.dart';
 import '../../widgets/widgetUtils.dart';
 import '../customer/navHomeScreen.dart';
 
@@ -496,90 +500,78 @@ class _HomePageState extends State<HomePage> {
                                 ),
                                 Padding(
                                   padding: EdgeInsets.only(left: 10,right: 10),
-                                  child: SingleChildScrollView(
-                                    physics: NeverScrollableScrollPhysics(),
-                                    child: Obx(() => Wrap(
-                                      spacing: 10,
-                                      runSpacing: 10,
-                                      children: homePageController.filterProductList.asMap().map((key, value) => MapEntry(key, GestureDetector(
-                                        onTap:(){
-                                         // log("${homePageController.filterProductList[key]}");
-                                          appointmentSheet();
-                                        },
-                                        child: Container(
-                                          height: 300,
-                                          ///  width: width*0.48,
-                                          //   margin: EdgeInsets.fromLTRB(width*0.01, 5, width*0.01, 5),
-                                          width: gridWidth*0.5,
-                                          //margin: EdgeInsets.fromLTRB(10, 5, width*0.01, 5),
-                                          // clipBehavior: Clip.antiAlias,
-                                          // decoration: BoxDecoration(
-                                          //     borderRadius: BorderRadius.circular(20),
-                                          //     color: lightGrey
-                                          // ),
-                                          child: Column(
-                                            children: [
-                                              Container(
-                                                height: 255,
-                                                width: gridWidth*0.9,
-                                                //child: Image.asset("assets/images/landingPage/slice-02.jpg"),
-                                                child: CachedNetworkImage(
-                                                  placeholder: (context, url) => Container(),
-                                                  imageUrl: GetImageBaseUrl()+homePageController.filterProductList[key]['ProductImage'],
-                                                  errorWidget:(c,a,b)=> Image.asset("assets/images/landingPage/slice-02.jpg"),
-                                                ),
+                                  child: Obx(() => Wrap(
+                                    spacing: 10,
+                                    runSpacing: 10,
+                                    children: homePageController.filterProductList.asMap().map((key, value) => MapEntry(key, GestureDetector(
+                                      onTap:(){
+                                       // log("${homePageController.filterProductList[key]}");
+                                        appointmentSheet();
+                                      },
+                                      child: Container(
+                                        height: 300,
+                                        ///  width: width*0.48,
+                                        //   margin: EdgeInsets.fromLTRB(width*0.01, 5, width*0.01, 5),
+                                        width: gridWidth*0.5,
+                                        //margin: EdgeInsets.fromLTRB(10, 5, width*0.01, 5),
+                                        // clipBehavior: Clip.antiAlias,
+                                        // decoration: BoxDecoration(
+                                        //     borderRadius: BorderRadius.circular(20),
+                                        //     color: lightGrey
+                                        // ),
+                                        child: Column(
+                                          children: [
+                                            Container(
+                                              height: 255,
+                                              width: gridWidth*0.9,
+                                              //child: Image.asset("assets/images/landingPage/slice-02.jpg"),
+                                              child: CachedNetworkImage(
+                                                placeholder: (context, url) => Container(),
+                                                imageUrl: GetImageBaseUrl()+homePageController.filterProductList[key]['ProductImage'],
+                                                errorWidget:(c,a,b)=> Image.asset("assets/images/landingPage/slice-02.jpg"),
                                               ),
-                                              Container(
-                                                height: 40,
-                                                child: Row(
-                                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                                  children: [
-                                                    Container(
-                                                      padding: EdgeInsets.only(left: 7),
-                                                      width: (gridWidth*0.5)-40,
-                                                      child: Column(
-                                                        crossAxisAlignment: CrossAxisAlignment.start,
-                                                        children: [
-                                                          Container(
-                                                            child: Text('${homePageController.filterProductList[key]['ProductName']}',style: TextStyle(fontFamily: 'RB',color: Colors.black,fontSize: 13),),
-                                                          ),
-                                                          SizedBox(height: 5,),
-                                                          Container(
-                                                            child: Text('${homePageController.filterProductList[key]['Price']}',style: TextStyle(fontFamily: 'RM',color: Colors.black,fontSize: 15),),
-                                                          ),
-                                                        ],
-                                                      ),
+                                            ),
+                                            Container(
+                                              height: 40,
+                                              child: Row(
+                                                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                                crossAxisAlignment: CrossAxisAlignment.start,
+                                                children: [
+                                                  Container(
+                                                    padding: EdgeInsets.only(left: 7),
+                                                    width: (gridWidth*0.5)-60,
+                                                    child: Column(
+                                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Flexible(
+                                                          child: Text('${homePageController.filterProductList[key]['ProductName']}',style: TextStyle(fontFamily: 'RB',color: Colors.black,fontSize: 13),),
+                                                        ),
+                                                        SizedBox(height: 5,),
+                                                        Container(
+                                                          child: Text('${homePageController.filterProductList[key]['Price']??0.0}',style: TextStyle(fontFamily: 'RM',color: Colors.black,fontSize: 15),),
+                                                        ),
+                                                      ],
                                                     ),
-                                                    Container(
-                                                      width: 20,
-                                                      height: 20,
-                                                      decoration: BoxDecoration(
-                                                        borderRadius: BorderRadius.circular(20),
-                                                        color: Colors.white,
-                                                        boxShadow: [
-                                                          BoxShadow(
-                                                            color:Color(0xFF000000).withOpacity(0.15),
-                                                            blurRadius: 10.0, // soften the shadow
-                                                            spreadRadius: 0.1, //extend the shadow
-                                                            offset: Offset(
-                                                              4.0, // Move to right 10  horizontally
-                                                              4.0, // Move to bottom 10 Vertically
-                                                            ),
-                                                          )
-                                                        ],
-                                                      ),
-                                                      child: Icon(Icons.favorite,color: tn.primaryColor.withOpacity(0.8),size: 18,),
-                                                    ),
-                                                  ],
-                                                ),
-                                              )
-                                            ],
-                                          ),
+                                                  ),
+                                                  //
+                                                  Visibility(
+                                                      visible: homePageController.filterProductList[key]['ProductVideo']!=null && homePageController.filterProductList[key]['ProductVideo']!="",
+                                                      child: productBottomIcons(Icon(Icons.video_camera_back_outlined,color: tn.primaryColor.withOpacity(0.8),size: 18,),ontap: (){
+                                                        showProductVideo(homePageController.filterProductList[key]['ProductVideo'],
+                                                          pName: homePageController.filterProductList[key]['ProductName']
+                                                        );
+                                                      })
+                                                  ),
+                                                  productBottomIcons(Icon(Icons.favorite,color: tn.primaryColor.withOpacity(0.8),size: 18,)),
+                                                ],
+                                              ),
+                                            )
+                                          ],
                                         ),
-                                      ))).values.toList(),
-                                    )),
-                                  ),
+                                      ),
+                                    ))).values.toList(),
+                                  )),
                                 )
                               ],
                             ),
@@ -833,6 +825,69 @@ class _HomePageState extends State<HomePage> {
         child: icon,
       ),
     );
+  }
+
+
+  Widget productBottomIcons(Widget icon, {VoidCallback? ontap}){
+    return GestureDetector(
+      onTap: ontap,
+      child: Container(
+        width: 25,
+        height: 25,
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(20),
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color:Color(0xFF000000).withOpacity(0.15),
+              blurRadius: 10.0, // soften the shadow
+              spreadRadius: 0.1, //extend the shadow
+              offset: Offset(
+                4.0, // Move to right 10  horizontally
+                4.0, // Move to bottom 10 Vertically
+              ),
+            )
+          ],
+        ),
+        child:icon,
+      ),
+    );
+  }
+
+  void showProductVideo(path,{String pName=""}){
+    FlickManager flickManager=FlickManager(
+        videoPlayerController: VideoPlayerController.network(GetImageBaseUrl()+path)
+    );
+    Get.dialog(Dialog(
+      //shape: alertRadius,
+      clipBehavior: Clip.antiAlias,
+      insetPadding: EdgeInsets.fromLTRB(15, 0, 15, 0),
+      child: Container(
+          height:300,
+          width:SizeConfig.screenWidth,
+          decoration:BoxDecoration(
+            color:Colors.white,
+          ),
+
+          child:Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+              children:[
+                Flexible(
+                  child: Text('${pName}',style: TextStyle(fontFamily: 'RB',color: ColorUtil.primaryTextColor1,fontSize: 18),),
+                ),
+                const SizedBox(height: 30,),
+                Container(
+                  //margin: EdgeInsets.only(left: 20,right: 20,top: 15),
+                  child: FlickVideoPlayer(
+                      flickManager: flickManager
+                  ),
+                )
+              ]
+          )
+      ),
+    )).then((value){
+      flickManager.dispose();
+    });
   }
 
 }
